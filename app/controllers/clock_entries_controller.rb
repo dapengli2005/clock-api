@@ -11,6 +11,28 @@ class ClockEntriesController < ApplicationController
     render json: entry, status: :ok
   end
 
+  def create
+    entry = @user.clock_entries.create(action_type: params[:type],
+                                       note: params[:note],
+                                       datetime: DateTime.now)
+    render json: entry, status: :created
+  end
+
+  def update
+    entry = @user.clock_entries.find(params[:id])
+    entry.update(action_type: params[:type],
+                 note: params[:note],
+                 datetime: params[:datetime])
+
+    render json: entry, status: :ok
+  end
+
+  def destroy
+    entry = @user.clock_entries.find(params[:id])
+    entry.destroy
+    head :no_content
+  end
+
   private
 
   def set_user
