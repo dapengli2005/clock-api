@@ -14,7 +14,7 @@ class ClockEntriesController < ApplicationController
   end
 
   def create
-    entry = @user.clock_entries.create(action_type: params[:type],
+    entry = @user.clock_entries.create(action_type: params[:action_type],
                                        note: params[:note],
                                        datetime: DateTime.now)
     render json: entry, status: :created
@@ -22,7 +22,7 @@ class ClockEntriesController < ApplicationController
 
   def update
     entry = @user.clock_entries.find(params[:id])
-    entry.update(action_type: params[:type],
+    entry.update(action_type: params[:action_type],
                  note: params[:note],
                  datetime: params[:datetime])
 
@@ -37,7 +37,7 @@ class ClockEntriesController < ApplicationController
 
   def next
     last_entry = @user.clock_entries.last
-    render json: { userId: @user.id, type: flip_action_type(last_entry) }, status: :ok
+    render json: { user_id: @user.id, type: flip_action_type(last_entry) }, status: :ok
   end
 
   private
