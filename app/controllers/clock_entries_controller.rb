@@ -4,7 +4,7 @@ class ClockEntriesController < ApplicationController
   PAGE_SIZE = 2
 
   def index
-    entries = @user.clock_entries.page(params[:page] ? params[:page].to_i : 1).per(PAGE_SIZE)
+    entries = @user.clock_entries.by_date_desc.page(params[:page] ? params[:page].to_i : 1).per(PAGE_SIZE)
     render json: { data: entries, meta: meta_for(entries) }, status: :ok
   end
 
