@@ -35,7 +35,7 @@ class ClockEntriesController < ApplicationController
 
   def next
     last_entry = @user.clock_entries.last
-    render json: { userId: @user.id, type: flip_type(last_entry) }, status: :ok
+    render json: { userId: @user.id, type: flip_action_type(last_entry) }, status: :ok
   end
 
   private
@@ -44,11 +44,7 @@ class ClockEntriesController < ApplicationController
     @user = User.find(params[:user_id])
   end
 
-  def flip_type(clock_entry)
-    if clock_entry
-      return clock_entry.action_type == 'IN' ? 'OUT' : 'IN'
-    end
-
-    'IN'
+  def flip_action_type(clock_entry)
+    clock_entry&.action_type == 'IN' ? 'OUT' : 'IN'
   end
 end
