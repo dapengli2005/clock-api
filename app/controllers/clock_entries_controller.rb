@@ -33,9 +33,22 @@ class ClockEntriesController < ApplicationController
     head :no_content
   end
 
+  def next
+    last_entry = @user.clock_entries.last
+    render json: { userId: @user.id, type: flip_type(last_entry) }, status: :ok
+  end
+
   private
 
   def set_user
     @user = User.find(params[:user_id])
+  end
+
+  def flip_type(clock_entry)
+    if clock_entry
+      return clock_entry.action_type == 'IN' ? 'OUT' : 'IN'
+    end
+
+    'IN'
   end
 end

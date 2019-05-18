@@ -4,6 +4,10 @@ Rails.application.routes.draw do
       post 'login'
     end
 
-    resources :clock_entries
+    resources :clock_entries do
+      collection do
+        get 'next'
+      end
+    end
   end
 end
