@@ -16,7 +16,7 @@ class ClockEntriesController < ApplicationController
   def create
     entry = @user.clock_entries.create(action_type: params[:action_type],
                                        note: params[:note],
-                                       datetime: DateTime.now)
+                                       datetime: params[:datetime] || DateTime.now)
     render json: entry, status: :created
   end
 
@@ -36,8 +36,8 @@ class ClockEntriesController < ApplicationController
   end
 
   def next
-    last_entry = @user.clock_entries.last
-    render json: { user_id: @user.id, type: flip_action_type(last_entry) }, status: :ok
+    last_entry = @user.clock_entries.by_date_desc.first
+    render json: { user_id: @user.id, action_type: flip_action_type(last_entry) }, status: :ok
   end
 
   private
