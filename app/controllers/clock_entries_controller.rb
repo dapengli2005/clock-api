@@ -1,9 +1,11 @@
 class ClockEntriesController < ApplicationController
   before_action :set_user
 
+  PAGE_SIZE = 2
+
   def index
-    entries = @user.clock_entries
-    render json: { data: entries }, status: :ok
+    entries = @user.clock_entries.page(params[:page] ? params[:page].to_i : 1).per(PAGE_SIZE)
+    render json: { data: entries, meta: meta_for(entries) }, status: :ok
   end
 
   def show
@@ -46,5 +48,19 @@ class ClockEntriesController < ApplicationController
 
   def flip_action_type(clock_entry)
     clock_entry&.action_type == 'IN' ? 'OUT' : 'IN'
+  end
+
+  def meta_for(items)
+    meta = {}
+    meta[:next] = meta_for_page(items.next_page) if items.next_page
+    meta[:prev] = meta_for_page(items.prev_page) if items.prev_page
+    meta
+  end
+
+  def meta_for_page(num)
+    {
+      method: 'GET',
+      url: "#{user_clock_entries_url}?page=#{num}"
+    }
   end
 end
