@@ -1,6 +1,0 @@
-- format JSON (limit fields, camelCase)
-- return JSON errors when record not found, and others
-- DRY params, use require and permit
-- double check HTTP status codes and response
-- use symbol to emulate enum for action type
-- update readme
