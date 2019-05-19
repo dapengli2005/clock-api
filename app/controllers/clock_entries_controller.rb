@@ -14,17 +14,17 @@ class ClockEntriesController < ApplicationController
   end
 
   def create
-    entry = @user.clock_entries.create(action_type: params[:action_type],
-                                       note: params[:note],
-                                       datetime: params[:datetime] || DateTime.now)
+    entry = @user.clock_entries.create!(action_type: params[:action_type],
+                                        note: params[:note],
+                                        datetime: params[:datetime] || DateTime.now)
     render json: entry, status: :created
   end
 
   def update
     entry = @user.clock_entries.find(params[:id])
-    entry.update(action_type: params[:action_type],
-                 note: params[:note],
-                 datetime: params[:datetime])
+    entry.update!(action_type: params[:action_type],
+                  note: params[:note],
+                  datetime: params[:datetime])
 
     render json: entry, status: :ok
   end
