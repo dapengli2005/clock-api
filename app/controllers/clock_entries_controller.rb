@@ -18,6 +18,10 @@ class ClockEntriesController < ApplicationController
   end
 
   def create
+    # validation at DTO level, returns 400 Bad Request if invalid (without involing model validation)
+    params.require(:action_type)
+
+    # validation at Model level, returns 422 Unprocessable Entity if invalid (though not likely in this case)
     entry = @user.clock_entries.create!(action_type: params[:action_type],
                                         note: params[:note],
                                         datetime: params[:datetime] || DateTime.now)

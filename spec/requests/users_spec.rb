@@ -17,26 +17,35 @@ RSpec.describe 'Users API', type: :request do
   end
 
   describe 'POST /users/login' do
-    context 'user does not exist' do
-      before { login(user.username) }
+    context 'with required params' do
+      context 'user does not exist' do
+        before { login(user.username) }
 
-      let(:json) { JSON.parse(response.body) }
+        let(:json) { JSON.parse(response.body) }
 
-      specify { expect(json).not_to be_empty }
-      specify { expect(json).to have_valid_serialization_keys}
-      specify { expect(response).to have_http_status(200) }
-      specify { expect { login(user.username) }.not_to change { User.count } }
+        specify { expect(json).not_to be_empty }
+        specify { expect(json).to have_valid_serialization_keys}
+        specify { expect(response).to have_http_status(200) }
+        specify { expect { login(user.username) }.not_to change { User.count } }
+      end
+
+      context 'user already exist' do
+        before { login }
+
+        let(:json) { JSON.parse(response.body) }
+
+        specify { expect(json).not_to be_empty }
+        specify { expect(json).to have_valid_serialization_keys}
+        specify { expect(response).to have_http_status(200) }
+        specify { expect { login }.to change { User.count }.by(1) }
+      end
     end
 
-    context 'user already exist' do
-      before { login }
+    context 'without require params "username"' do
+        before { login('') }
 
-      let(:json) { JSON.parse(response.body) }
-
-      specify { expect(json).not_to be_empty }
-      specify { expect(json).to have_valid_serialization_keys}
-      specify { expect(response).to have_http_status(200) }
-      specify { expect { login }.to change { User.count }.by(1) }
+        specify { expect(response.body).not_to be_empty }
+        specify { expect(response).to have_http_status(400) }
     end
   end
 

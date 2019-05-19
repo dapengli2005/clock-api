@@ -30,14 +30,25 @@ RSpec.describe 'ClockEntries API', type: :request do
   end
 
   describe 'POST /clock_entries' do
-    let(:valid_attributes) { { action_type: 'IN' } }
-    before { post "/users/#{user.id}/clock_entries", params: valid_attributes }
+    context 'with required params' do
+      let(:valid_attributes) { { action_type: 'IN' } }
+      before { post "/users/#{user.id}/clock_entries", params: valid_attributes }
 
-    let(:json) { JSON.parse(response.body) }
+      let(:json) { JSON.parse(response.body) }
 
-    specify { expect(json).not_to be_empty }
-    specify { expect(json).to have_valid_serialization_keys }
-    specify { expect(response).to have_http_status(201) }
+      specify { expect(json).not_to be_empty }
+      specify { expect(json).to have_valid_serialization_keys }
+      specify { expect(response).to have_http_status(201) }
+    end
+
+    context 'without required param "action_type"' do
+      let(:invalid_attributes) { {} }
+      before { post "/users/#{user.id}/clock_entries", params: invalid_attributes }
+
+      let(:json) { JSON.parse(response.body) }
+
+      specify { expect(response).to have_http_status(400) }
+    end
   end
 
   describe 'PUT /clock_entries/:id' do
