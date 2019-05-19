@@ -2,17 +2,19 @@ class ClockEntriesController < ApplicationController
   before_action :set_user
 
   PAGE_SIZE = 2
+  SERIALIZATION_FIELDS = [:id, :user_id, :action_type, :datetime, :note]
 
   def index
     entries = @user.clock_entries.by_date_desc.page(params[:page] ? params[:page].to_i : 1).per(PAGE_SIZE)
 
-    render json: { data: entries, meta: meta_for(entries) }, status: :ok
+    entries_json = entries.map { |entry| as_json(entry) }
+    render json: { data: entries_json, meta: meta_for(entries) }, status: :ok
   end
 
   def show
     entry = @user.clock_entries.find(params[:id])
 
-    render json: entry, status: :ok
+    render json: as_json(entry), status: :ok
   end
 
   def create
@@ -20,16 +22,17 @@ class ClockEntriesController < ApplicationController
                                         note: params[:note],
                                         datetime: params[:datetime] || DateTime.now)
 
-    render json: entry, status: :created
+    render json: as_json(entry), status: :created
   end
 
   def update
     entry = @user.clock_entries.find(params[:id])
-    entry.update!(action_type: params[:action_type],
-                  note: params[:note],
-                  datetime: params[:datetime])
+    entry.action_type = params[:action_type] if params[:action_type]
+    entry.note = params[:note] if params[:note]
+    entry.datetime = params[:datetime] if params[:datetime]
+    entry.save!
 
-    render json: entry, status: :ok
+    render json: as_json(entry), status: :ok
   end
 
   def destroy
@@ -67,5 +70,9 @@ class ClockEntriesController < ApplicationController
       method: 'GET',
       url: "#{user_clock_entries_url}?page=#{num}"
     }
+  end
+
+  def as_json(entry)
+    entry.as_json(only: SERIALIZATION_FIELDS)
   end
 end

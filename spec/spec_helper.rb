@@ -93,4 +93,18 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
+
+  # custom matchers
+  RSpec::Matchers.define :have_keys do |whitelist_keys|
+    match do |actual|
+      has_all_allowed = whitelist_keys.all? { |key| actual.has_key? key }
+      has_any_disallowed = @blacklist_keys && @blacklist_keys.any? { |key| actual.has_key? key }
+
+      has_all_allowed && !has_any_disallowed
+    end
+
+    chain :and_not_have_keys do |blacklist_keys|
+      @blacklist_keys = blacklist_keys
+    end
+  end
 end
