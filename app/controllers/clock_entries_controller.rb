@@ -5,11 +5,13 @@ class ClockEntriesController < ApplicationController
 
   def index
     entries = @user.clock_entries.by_date_desc.page(params[:page] ? params[:page].to_i : 1).per(PAGE_SIZE)
+
     render json: { data: entries, meta: meta_for(entries) }, status: :ok
   end
 
   def show
     entry = @user.clock_entries.find(params[:id])
+
     render json: entry, status: :ok
   end
 
@@ -17,6 +19,7 @@ class ClockEntriesController < ApplicationController
     entry = @user.clock_entries.create!(action_type: params[:action_type],
                                         note: params[:note],
                                         datetime: params[:datetime] || DateTime.now)
+
     render json: entry, status: :created
   end
 
@@ -32,22 +35,24 @@ class ClockEntriesController < ApplicationController
   def destroy
     entry = @user.clock_entries.find(params[:id])
     entry.destroy
+
     head :no_content
   end
 
   def next
     last_entry = @user.clock_entries.by_date_desc.first
-    render json: { user_id: @user.id, action_type: flip_action_type(last_entry) }, status: :ok
+    body = {
+      user_id: @user.id,
+      action_type: ClockEntry.next_action(last_entry&.action_type)
+    }
+
+    render json: body, status: :ok
   end
 
   private
 
   def set_user
     @user = User.find(params[:user_id])
-  end
-
-  def flip_action_type(clock_entry)
-    clock_entry&.action_type == 'IN' ? 'OUT' : 'IN'
   end
 
   def meta_for(items)

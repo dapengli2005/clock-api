@@ -12,6 +12,10 @@ class ClockEntry < ApplicationRecord
 
   scope :by_date_desc, -> { order(datetime: :desc) }
 
+  def self.next_action(prev_action)
+    prev_action == 'IN' ? 'OUT' : 'IN'
+  end
+
   private
 
   def datetime_not_in_future
