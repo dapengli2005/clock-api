@@ -8,13 +8,13 @@ class ClockEntriesController < ApplicationController
     entries = @user.clock_entries.by_date_desc.page(params[:page] ? params[:page].to_i : 1).per(PAGE_SIZE)
 
     entries_json = entries.map { |entry| as_json(entry) }
-    render json: { data: entries_json, meta: meta_for(entries) }, status: :ok
+    render json: { data: entries_json, meta: meta_for(entries) }
   end
 
   def show
     entry = @user.clock_entries.find(params[:id])
 
-    render json: as_json(entry), status: :ok
+    render json: as_json(entry)
   end
 
   def create
@@ -36,7 +36,7 @@ class ClockEntriesController < ApplicationController
     entry.datetime = params[:datetime] if params[:datetime]
     entry.save!
 
-    render json: as_json(entry), status: :ok
+    render json: as_json(entry)
   end
 
   def destroy
@@ -53,7 +53,7 @@ class ClockEntriesController < ApplicationController
       action_type: ClockEntry.next_action(last_entry&.action_type)
     }
 
-    render json: body, status: :ok
+    render json: body
   end
 
   private

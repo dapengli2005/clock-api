@@ -6,12 +6,12 @@ class UsersController < ApplicationController
     params.require(:username)
 
     user = User.find_or_create_by!(username: params[:username])
-    render json: as_json(user), status: :ok
+    render json: as_json(user)
   end
 
   def show
     user = User.find(params[:id])
-    render json: as_json(user), status: :ok
+    render json: as_json(user)
   end
 
   private
