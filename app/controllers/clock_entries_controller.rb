@@ -1,13 +1,16 @@
 class ClockEntriesController < ApplicationController
   before_action :set_user
 
-  PAGE_SIZE = 2
+  PAGE_SIZE = 5
   SERIALIZATION_FIELDS = [:id, :user_id, :action_type, :datetime, :note]
 
   def index
-    entries = @user.clock_entries.by_date_desc.page(params[:page] ? params[:page].to_i : 1).per(PAGE_SIZE)
+    entries = @user.clock_entries
+      .by_date_desc.page(params[:page] ? params[:page].to_i : 1)
+      .per(PAGE_SIZE)
 
     entries_json = entries.map { |entry| as_json(entry) }
+
     render json: { data: entries_json, meta: meta_for(entries) }
   end
 
